@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Forecast</title>
+
+    <!-- External CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'weather/styles.css' %}" />
+  </head>
+
+  <body>
+    <div class="container mt-5">
+      <h1 class="mb-4">Weather Forecast</h1>
+      <form method="get" class="mb-4">
+        <div class="form-group">
+          <input
+            type="text"
+            id="city"
+            name="city"
+            class="form-control"
+            placeholder="Enter city name"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Get Weather</button>
+        <a href="{% url 'search_history' %}" class="btn btn-secondary"
+          >View Search History</a
+        >
+      </form>
+
+      {% if weather_forecast is None %}
+      
+      <div class="card-scroll-wrapper mt-4">
+        {% for _ in "12345" %}
+        <div class="card mb-3 forecast-card skeleton">
+          <div class="card-body">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% if error %}
+      <div class="alert alert-danger mt-4" role="alert">Error: {{ error }}</div>
+      {% endif %} {% if weather_forecast %}
+      <div class="card-scroll-wrapper mt-4">
+        {% for day in weather_forecast %}
+        <div class="card mb-3 forecast-card">
+          <div class="card-body">
+            <h5 class="card-title">{{ day.date }}</h5>
+            <p class="card-text">
+              Max Temperature: {{ day.max_temp|floatformat:"0" }}°C
+            </p>
+            <p class="card-text">
+              Min Temperature: {{ day.min_temp|floatformat:"0" }}°C
+            </p>
+            <p class="card-text">{{ day.description }}</p>
+            <img
+              src="http://openweathermap.org/img/wn/{{ day.icon }}@2x.png"
+              alt="{{ day.description }}"
+              class="img-fluid"
+            />
+          </div>
+
+          <div class="hourly-forecast">
+            {% for hour in day.hourly %}
+            <div class="hourly-item">
+              <p class="hour">{{ hour.time }}</p>
+              <img
+                class="icon"
+                src="http://openweathermap.org/img/wn/{{ hour.icon }}.png"
+                alt="{{ hour.description }}"
+              />
+              <p class="temp">{{ hour.temp|floatformat:"0" }}°C</p>
+            </div>
+            {% empty %}
+            <div class="hourly-item skeleton">
+              <p class="hour">&nbsp;</p>
+              <img class="icon" src="#" alt="" />
+              <p class="temp">&nbsp;°C</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- External JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'weather/scripts.js' %}"></script>
+  </body>
+</html>
