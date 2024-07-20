@@ -10,10 +10,11 @@ api_key = os.getenv('OPENWEATHER_API_KEY')
 
 def get_weather(request):
     city = request.GET.get('city', '')
-    if not city:
-        weather_forecast = None
-        error = None
-    else:
+    last_searches = []
+
+    default_user, _ = User.objects.get_or_create(username='anonymous_user')
+
+    if city:
         api_url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}&units=metric"
         
         try:
@@ -45,7 +46,6 @@ def get_weather(request):
                         if entry['main']['temp_min'] < daily_data[day]['min_temp']:
                             daily_data[day]['min_temp'] = entry['main']['temp_min']
 
-                    # Add hourly data
                     daily_data[day]['hourly'].append({
                         'time': date.strftime('%H:%M'),
                         'temp': int(entry['main']['temp']),
@@ -62,7 +62,6 @@ def get_weather(request):
                         'hourly': data['hourly'][:5]
                     })
 
-                default_user, _ = User.objects.get_or_create(username='anonymous_user')
                 SearchHistory.objects.create(
                     user=default_user,
                     city=city,
@@ -74,10 +73,17 @@ def get_weather(request):
         except requests.exceptions.RequestException as e:
             weather_forecast = None
             error = f"Error fetching weather: {str(e)}"
+    else:
+        weather_forecast = None
+        error = None
+
+    last_searches = SearchHistory.objects.filter(user=default_user).values_list('city', flat=True).distinct()[:3]
 
     context = {
         'weather_forecast': weather_forecast,
         'error': error,
+        'last_searches': list(last_searches),
+        'searched_city': city,
     }
 
     return render(request, 'weather/index.html', context)

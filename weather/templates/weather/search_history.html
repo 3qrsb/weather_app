@@ -19,8 +19,6 @@
         <li class="list-group-item">
           <strong>{{ search.city }}</strong>
           - Searched on {{ search.timestamp|date:"F j, Y" }}<br />
-          Temperature: {{ search.weather_data.temperature }}°C<br />
-          Description: {{ search.weather_data.description }}<br /><br />
         </li>
         {% empty %}
         <li class="list-group-item">No search history available.</li>
