@@ -26,3 +26,23 @@ $(function () {
       $(this).autocomplete("search", "");
   });
 });
+
+$(document).ready(function () {
+    $('#searchHistoryModal').on('show.bs.modal', function () {
+      $.ajax({
+        url: '/search-count/',
+        method: 'GET',
+        success: function (data) {
+          const searchHistoryList = $('#searchHistoryList');
+          searchHistoryList.empty();
+  
+          data.forEach(function (item) {
+            searchHistoryList.append(`<li class="list-group-item">${item.city} - ${item.count} searches</li>`);
+          });
+        },
+        error: function () {
+          alert('Failed to fetch search history');
+        }
+      });
+    });
+  });

@@ -3,6 +3,7 @@ import os
 import requests
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.db.models import Count
 from django.contrib.auth.models import User
 from .models import SearchHistory
 
@@ -109,3 +110,7 @@ def autocomplete(request):
 def search_history(request):
     user_searches = SearchHistory.objects.order_by('-timestamp')
     return render(request, 'weather/search_history.html', {'user_searches': user_searches})
+
+def search_count(request):
+    search_counts = SearchHistory.objects.values('city').annotate(count=Count('city')).order_by('-count')
+    return JsonResponse(list(search_counts), safe=False)

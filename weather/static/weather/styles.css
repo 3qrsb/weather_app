@@ -6,11 +6,22 @@ body {
   
 .container {
     position: relative;
-    z-index: 1;
     background-color: rgba(184, 162, 245, 0.253);
     padding: 20px;
     border-radius: 10px;
-    backdrop-filter: blur(1px);
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: inherit;
+    backdrop-filter: blur(2px);
+    z-index: -1;
+    border-radius: inherit;
 }
   
 .card-scroll-wrapper {
@@ -106,27 +117,4 @@ body {
     100% {
         transform: translateX(100%);
     }
-}
-
-.skeleton-icon {
-    width: 60px;
-    height: 60px;
-    background-color: #ddd;
-    border-radius: 50%;
-    margin-right: 20px;
-    flex-shrink: 0;
-}
-
-.skeleton-card {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    width: 270px;
-    height: 100px;
-    flex-shrink: 0;
-}
-
-.skeleton-text {
-    flex: 1;
-    overflow: hidden;
 }
